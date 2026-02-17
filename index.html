@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AltCord Exchange - Giełda Alternatyw Discorda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+        .stock-card { border: 1px solid #1e293b; transition: transform 0.2s; }
+        .stock-card:hover { transform: scale(1.02); border-color: #3b82f6; }
+        .bullish { color: #22c55e; } /* Zielony dla wzrostów */
+    </style>
+</head>
+<body class="p-8">
+    <header class="max-w-4xl mx-auto mb-12 text-center">
+        <h1 class="text-4xl font-bold text-blue-500 mb-2">ALT-CORD $EXCHANGE</h1>
+        <p class="text-slate-400 text-lg">Indeks popularności alternatyw dla Discorda</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto grid gap-6">
+        <!-- Przykładowa "Akcja" -->
+        <div class="stock-card bg-slate-800 p-6 rounded-xl flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold">$RVLT (Revolt)</h2>
+                <p class="text-slate-400 text-sm">Open-source Discord alternative</p>
+            </div>
+            <div class="text-right">
+                <div class="text-2xl font-mono">12,450 ★</div>
+                <div class="bullish font-bold">+1.2% (24h)</div>
+            </div>
+        </div>
+
+        <div class="stock-card bg-slate-800 p-6 rounded-xl flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold">$MTRX (Matrix/Element)</h2>
+                <p class="text-slate-400 text-sm">Decentralized communication</p>
+            </div>
+            <div class="text-right">
+                <div class="text-2xl font-mono">45,102 ★</div>
+                <div class="bullish font-bold">+0.5% (24h)</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-4xl mx-auto mt-12 text-center text-slate-500 text-sm border-t border-slate-800 pt-4">
+        Dane aktualizowane automatycznie przez GitHub Actions. Projekt "For Fun".
+    </footer>
+</body>
+</html>
