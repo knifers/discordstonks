@@ -1,20 +1,24 @@
 {
-  "updated_at": "2024-05-20",
-  "history_dates": ["2024-05-18", "2024-05-19", "2024-05-20"],
+  "updated_at": "2024-05-21",
+  "history_dates": ["19.05", "20.05", "21.05"],
   "apps": [
     {
       "id": "stoat",
       "name": "Stoat",
       "ticker": "STOAT",
-      "current_price": 124,
+      "github_repo": "stoat-dev/stoat",
+      "reddit_sub": "stoat",
+      "current_price": 150,
       "change_24h": 5.2,
-      "history": [110, 118, 124],
+      "history": [110, 124, 150],
       "color": "#3b82f6"
     },
     {
       "id": "fluxer",
       "name": "Fluxer",
       "ticker": "FLX",
+      "github_repo": "fluxer/fluxer",
+      "reddit_sub": null,
       "current_price": 890,
       "change_24h": 1.1,
       "history": [880, 885, 890],
@@ -24,6 +28,8 @@
       "id": "dcts",
       "name": "DCTS",
       "ticker": "DCTS",
+      "github_repo": "dcts/dcts",
+      "reddit_sub": "dcts_chat",
       "current_price": 45,
       "change_24h": 0.0,
       "history": [45, 45, 45],
@@ -33,19 +39,34 @@
       "id": "teamspeak",
       "name": "TeamSpeak",
       "ticker": "TS",
-      "current_price": 9999,
-      "change_24h": 0.0,
-      "history": [9999, 9999, 9999],
+      "github_repo": null,
+      "reddit_sub": "teamspeak",
+      "current_price": 14200,
+      "change_24h": -0.1,
+      "history": [14250, 14210, 14200],
       "color": "#f97316"
     },
     {
       "id": "gg",
       "name": "Gadu-Gadu",
       "ticker": "GG",
+      "github_repo": null,
+      "reddit_sub": "poland",
       "current_price": 1990,
-      "change_24h": -0.5,
-      "history": [2000, 1995, 1990],
+      "change_24h": 0.0,
+      "history": [1990, 1990, 1990],
       "color": "#eab308"
+    },
+    {
+      "id": "root",
+      "name": "Root",
+      "ticker": "ROOT",
+      "github_repo": "ustroot/root",
+      "reddit_sub": null,
+      "current_price": 320,
+      "change_24h": 12.5,
+      "history": [280, 300, 320],
+      "color": "#ef4444"
     }
   ]
 }
