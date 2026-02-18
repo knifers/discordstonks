@@ -1,0 +1,51 @@
+{
+  "updated_at": "2024-05-20",
+  "history_dates": ["2024-05-18", "2024-05-19", "2024-05-20"],
+  "apps": [
+    {
+      "id": "stoat",
+      "name": "Stoat",
+      "ticker": "STOAT",
+      "current_price": 124,
+      "change_24h": 5.2,
+      "history": [110, 118, 124],
+      "color": "#3b82f6"
+    },
+    {
+      "id": "fluxer",
+      "name": "Fluxer",
+      "ticker": "FLX",
+      "current_price": 890,
+      "change_24h": 1.1,
+      "history": [880, 885, 890],
+      "color": "#a855f7"
+    },
+    {
+      "id": "dcts",
+      "name": "DCTS",
+      "ticker": "DCTS",
+      "current_price": 45,
+      "change_24h": 0.0,
+      "history": [45, 45, 45],
+      "color": "#10b981"
+    },
+    {
+      "id": "teamspeak",
+      "name": "TeamSpeak",
+      "ticker": "TS",
+      "current_price": 9999,
+      "change_24h": 0.0,
+      "history": [9999, 9999, 9999],
+      "color": "#f97316"
+    },
+    {
+      "id": "gg",
+      "name": "Gadu-Gadu",
+      "ticker": "GG",
+      "current_price": 1990,
+      "change_24h": -0.5,
+      "history": [2000, 1995, 1990],
+      "color": "#eab308"
+    }
+  ]
+}
