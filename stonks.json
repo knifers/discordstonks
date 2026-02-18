@@ -1,6 +1,11 @@
 {
-  "updated_at": "2024-05-21",
-  "history_dates": ["19.05", "20.05", "21.05"],
+  "updated_at": "2026-02-18",
+  "history_dates": [
+    "19.05",
+    "20.05",
+    "21.05",
+    "2026-02-18"
+  ],
   "apps": [
     {
       "id": "stoat",
@@ -9,8 +14,13 @@
       "github_repo": "stoat-dev/stoat",
       "reddit_sub": "stoat",
       "current_price": 150,
-      "change_24h": 5.2,
-      "history": [110, 124, 150],
+      "change_24h": 0.0,
+      "history": [
+        110,
+        124,
+        150,
+        150
+      ],
       "color": "#3b82f6"
     },
     {
@@ -20,8 +30,13 @@
       "github_repo": "fluxer/fluxer",
       "reddit_sub": null,
       "current_price": 890,
-      "change_24h": 1.1,
-      "history": [880, 885, 890],
+      "change_24h": 0.0,
+      "history": [
+        880,
+        885,
+        890,
+        890
+      ],
       "color": "#a855f7"
     },
     {
@@ -32,7 +47,12 @@
       "reddit_sub": "dcts_chat",
       "current_price": 45,
       "change_24h": 0.0,
-      "history": [45, 45, 45],
+      "history": [
+        45,
+        45,
+        45,
+        45
+      ],
       "color": "#10b981"
     },
     {
@@ -42,8 +62,13 @@
       "github_repo": null,
       "reddit_sub": "teamspeak",
       "current_price": 14200,
-      "change_24h": -0.1,
-      "history": [14250, 14210, 14200],
+      "change_24h": 0.0,
+      "history": [
+        14250,
+        14210,
+        14200,
+        14200
+      ],
       "color": "#f97316"
     },
     {
@@ -54,7 +79,12 @@
       "reddit_sub": "poland",
       "current_price": 1990,
       "change_24h": 0.0,
-      "history": [1990, 1990, 1990],
+      "history": [
+        1990,
+        1990,
+        1990,
+        1990
+      ],
       "color": "#eab308"
     },
     {
@@ -64,8 +94,13 @@
       "github_repo": "ustroot/root",
       "reddit_sub": null,
       "current_price": 320,
-      "change_24h": 12.5,
-      "history": [280, 300, 320],
+      "change_24h": 0.0,
+      "history": [
+        280,
+        300,
+        320,
+        320
+      ],
       "color": "#ef4444"
     }
   ]
