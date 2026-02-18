@@ -1,55 +1,125 @@
-async function loadStonks() {
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISCORD STONKS - Market Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .ticker-card { border: 1px solid #1e293b; background: #161b22; transition: all 0.3s; }
+        .ticker-card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+        
+        /* Animacja ładowania */
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        .loading { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-7xl mx-auto">
+    
+    <header class="mb-8 text-center border-b border-slate-800 pb-8">
+        <h1 class="text-5xl font-black tracking-tighter mb-2">DISCORD <span class="text-blue-500">STONKS</span></h1>
+        <p class="text-slate-400 text-sm font-mono">Real-time Hype Tracker | Powered by GitHub & Reddit Data</p>
+    </header>
+
+    <!-- WYKRES GŁÓWNY -->
+    <div class="bg-[#161b22] border border-slate-800 p-4 rounded-2xl mb-8 shadow-2xl relative">
+        <h3 class="text-slate-400 text-xs uppercase font-bold mb-4 ml-2 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            Wykres Popularności (Total Hype Score)
+        </h3>
+        <div class="h-[350px] w-full">
+            <canvas id="mainChart"></canvas>
+        </div>
+    </div>
+
+    <!-- KAFELKI -->
+    <div id="tickers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Loader startowy -->
+        <div class="col-span-full text-center py-20 loading">
+            <div class="text-2xl font-bold text-slate-600">ŁĄCZENIE Z GIEŁDĄ...</div>
+            <div class="text-sm text-slate-700 mt-2">Pobieranie danych z stonks.json</div>
+        </div>
+    </div>
+
+    <footer class="mt-16 text-center text-slate-600 text-xs border-t border-slate-900 pt-8">
+        <p>Dane aktualizowane automatycznie o 00:00 UTC.</p>
+        <p class="mt-1">Projekt Open Source. Notowania oparte o sumę GitHub Stars + Reddit Subs.</p>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT - TO MUSI BYĆ W TAGU SCRIPT -->
+    <script>
+        // Funkcja startowa
+        async function loadStonks() {
             try {
+                // 1. Pobieramy dane
                 const response = await fetch('stonks.json');
-                if (!response.ok) throw new Error("Błąd pobierania danych");
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
 
-                // Dodajemy datę aktualizacji na górze
-                document.querySelector('header p').innerText = `Ostatnia aktualizacja: ${data.updated_at} | Real-time Hype Tracker`;
+                // 2. Aktualizujemy nagłówek datą
+                const dateElem = document.querySelector('header p');
+                dateElem.innerHTML = `Ostatnia aktualizacja: <span class="text-white">${data.updated_at}</span> | GitHub & Reddit Data`;
 
+                // 3. Rysujemy elementy
                 renderChart(data);
                 renderCards(data.apps);
 
             } catch (error) {
-                console.error(error);
-                document.getElementById('tickers-grid').innerHTML = 
-                    '<div class="text-red-500 text-center">Błąd: Nie udało się pobrać notowań. Sprawdź plik stonks.json!</div>';
+                console.error("Błąd krytyczny:", error);
+                document.getElementById('tickers-grid').innerHTML = `
+                    <div class="col-span-full bg-red-900/20 border border-red-900 p-8 rounded-xl text-center">
+                        <h2 class="text-xl font-bold text-red-500 mb-2">BŁĄD DANYCH</h2>
+                        <p class="text-red-400 text-sm">Nie udało się załadować pliku stonks.json.</p>
+                        <p class="text-slate-500 text-xs mt-4">Sprawdź czy plik istnieje w repozytorium i czy format JSON jest poprawny.</p>
+                    </div>
+                `;
             }
         }
 
+        // Funkcja rysująca kafelki
         function renderCards(apps) {
             const container = document.getElementById('tickers-grid');
-            container.innerHTML = ''; 
+            container.innerHTML = ''; // Czyścimy loader
+
+            // Sortujemy od najpopularniejszych
+            apps.sort((a, b) => b.current_price - a.current_price);
 
             apps.forEach(app => {
-                const isPositive = app.change_24h > 0;
-                const isNegative = app.change_24h < 0;
-                const colorClass = isPositive ? 'text-green-400' : (isNegative ? 'text-red-400' : 'text-slate-500');
+                const isPositive = app.change_24h >= 0;
+                const colorClass = isPositive ? 'text-green-400' : 'text-red-400';
                 const sign = isPositive ? '+' : '';
+                const arrow = isPositive ? '▲' : '▼';
                 
-                // Budujemy etykiety źródeł (GitHub / Reddit)
+                // Ikony źródeł
                 let badges = '';
-                if (app.github_repo) badges += `<span class="bg-slate-800 text-[10px] px-2 py-1 rounded border border-slate-700 mr-1">GITHUB</span>`;
-                if (app.reddit_sub) badges += `<span class="bg-orange-900/30 text-orange-400 text-[10px] px-2 py-1 rounded border border-orange-900/50">r/${app.reddit_sub}</span>`;
+                if (app.github_repo) badges += `<a href="https://github.com/${app.github_repo}" target="_blank" class="hover:text-white transition-colors bg-slate-800 text-[10px] px-2 py-1 rounded border border-slate-700 mr-2 flex items-center gap-1">Github</a>`;
+                if (app.reddit_sub) badges += `<a href="https://reddit.com/r/${app.reddit_sub}" target="_blank" class="hover:text-white transition-colors bg-[#ff4500]/10 text-[#ff4500] text-[10px] px-2 py-1 rounded border border-[#ff4500]/30 flex items-center gap-1">r/${app.reddit_sub}</a>`;
 
                 const html = `
-                    <div class="ticker-card p-5 rounded-xl relative overflow-hidden flex flex-col justify-between h-32">
-                         <div class="absolute top-0 right-0 w-24 h-24 bg-[${app.color}] opacity-[0.03] rounded-full -mr-8 -mt-8 pointer-events-none"></div>
+                    <div class="ticker-card p-6 rounded-xl relative overflow-hidden flex flex-col justify-between h-40 group">
+                        <!-- Tło ozdobne -->
+                        <div class="absolute -right-6 -top-6 w-32 h-32 rounded-full opacity-[0.05] transition-opacity group-hover:opacity-[0.1]" style="background-color: ${app.color}"></div>
                         
                         <div class="flex justify-between items-start z-10">
                             <div>
-                                <div class="text-[10px] text-slate-500 font-bold tracking-widest mb-1">${app.ticker}</div>
-                                <h2 class="text-xl font-bold text-white">${app.name}</h2>
+                                <div class="text-[10px] text-slate-500 font-bold tracking-widest mb-1 uppercase">${app.ticker}</div>
+                                <h2 class="text-2xl font-bold text-white tracking-tight">${app.name}</h2>
                             </div>
                             <div class="text-right">
-                                <div class="text-2xl font-mono font-bold text-slate-200">${app.current_price.toLocaleString()}</div>
-                                <div class="text-xs font-bold ${colorClass}">
-                                    ${sign}${app.change_24h}%
+                                <div class="text-3xl font-mono font-bold text-slate-200">${app.current_price.toLocaleString()}</div>
+                                <div class="text-xs font-bold ${colorClass} mt-1 bg-slate-900/50 py-1 px-2 rounded inline-block">
+                                    ${arrow} ${sign}${app.change_24h}%
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-auto z-10 flex items-center opacity-80">
+                        <div class="mt-auto z-10 flex items-center pt-4 opacity-70 hover:opacity-100 transition-opacity">
                             ${badges}
                         </div>
                     </div>
@@ -58,6 +128,7 @@ async function loadStonks() {
             });
         }
 
+        // Funkcja rysująca wykres
         function renderChart(data) {
             const ctx = document.getElementById('mainChart').getContext('2d');
             
@@ -69,8 +140,13 @@ async function loadStonks() {
                 borderWidth: 2,
                 tension: 0.3, 
                 pointRadius: 0,
-                pointHoverRadius: 6
+                pointHoverRadius: 6,
+                hoverBackgroundColor: app.color
             }));
+
+            // Ustawienia Chart.js
+            Chart.defaults.color = '#64748b';
+            Chart.defaults.font.family = "'Segoe UI', sans-serif";
 
             new Chart(ctx, {
                 type: 'line',
@@ -86,27 +162,35 @@ async function loadStonks() {
                         intersect: false,
                     },
                     plugins: {
-                        legend: { labels: { color: '#64748b', boxWidth: 10 } },
+                        legend: { 
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 20 } 
+                        },
                         tooltip: { 
                             backgroundColor: '#1e293b', 
                             titleColor: '#fff', 
-                            bodyColor: '#94a3b8',
+                            bodyColor: '#e2e8f0',
                             borderColor: '#334155',
-                            borderWidth: 1
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true
                         }
                     },
                     scales: {
                         y: {
-                            grid: { color: '#1e293b' },
-                            ticks: { color: '#64748b' }
+                            grid: { color: '#1e293b', drawBorder: false },
+                            ticks: { callback: function(value) { return value.toLocaleString(); } }
                         },
                         x: {
-                            grid: { display: false },
-                            ticks: { color: '#64748b' }
+                            grid: { display: false, drawBorder: false }
                         }
                     }
                 }
             });
         }
 
+        // Uruchomienie
         loadStonks();
+    </script>
+</body>
+</html>
