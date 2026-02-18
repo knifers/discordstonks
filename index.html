@@ -1,48 +1,11 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DISCORD STONKS - Market Data</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .ticker-card { border: 1px solid #1e293b; background: #161b22; transition: all 0.3s; }
-        .ticker-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
-        .up { color: #00ff88; }
-        .down { color: #ff4444; }
-        .neutral { color: #94a3b8; }
-    </style>
-</head>
-<body class="p-4 md:p-8 max-w-6xl mx-auto">
-    
-    <header class="mb-8 text-center">
-        <h1 class="text-4xl font-black tracking-tighter mb-2">DISCORD <span class="text-blue-500">STONKS</span></h1>
-        <p class="text-slate-400 text-sm">Real-time Hype Tracker (Beta)</p>
-    </header>
-
-    <!-- WYKRES GŁÓWNY -->
-    <div class="bg-[#161b22] border border-slate-800 p-4 rounded-2xl mb-8 shadow-2xl">
-        <h3 class="text-slate-400 text-xs uppercase font-bold mb-4 ml-2">Wykres Popularności (Ostatnie dni)</h3>
-        <div class="h-[300px] w-full">
-            <canvas id="mainChart"></canvas>
-        </div>
-    </div>
-
-    <!-- KAFELKI -->
-    <div id="tickers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Tutaj JavaScript wstrzyknie dane -->
-        <div class="text-center text-slate-500 py-10">Ładowanie danych giełdowych...</div>
-    </div>
-
-    <script>
-        async function loadStonks() {
+async function loadStonks() {
             try {
-                // Pobieramy dane z Twojego pliku JSON
                 const response = await fetch('stonks.json');
                 if (!response.ok) throw new Error("Błąd pobierania danych");
                 const data = await response.json();
+
+                // Dodajemy datę aktualizacji na górze
+                document.querySelector('header p').innerText = `Ostatnia aktualizacja: ${data.updated_at} | Real-time Hype Tracker`;
 
                 renderChart(data);
                 renderCards(data.apps);
@@ -56,26 +19,38 @@
 
         function renderCards(apps) {
             const container = document.getElementById('tickers-grid');
-            container.innerHTML = ''; // Czyścimy loader
+            container.innerHTML = ''; 
 
             apps.forEach(app => {
                 const isPositive = app.change_24h > 0;
                 const isNegative = app.change_24h < 0;
-                const colorClass = isPositive ? 'up' : (isNegative ? 'down' : 'neutral');
+                const colorClass = isPositive ? 'text-green-400' : (isNegative ? 'text-red-400' : 'text-slate-500');
                 const sign = isPositive ? '+' : '';
+                
+                // Budujemy etykiety źródeł (GitHub / Reddit)
+                let badges = '';
+                if (app.github_repo) badges += `<span class="bg-slate-800 text-[10px] px-2 py-1 rounded border border-slate-700 mr-1">GITHUB</span>`;
+                if (app.reddit_sub) badges += `<span class="bg-orange-900/30 text-orange-400 text-[10px] px-2 py-1 rounded border border-orange-900/50">r/${app.reddit_sub}</span>`;
 
                 const html = `
-                    <div class="ticker-card p-5 rounded-xl flex justify-between items-center relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-[${app.color}] opacity-5 rounded-full -mr-8 -mt-8"></div>
-                        <div>
-                            <div class="text-[10px] text-slate-500 font-bold tracking-widest mb-1">${app.ticker}</div>
-                            <h2 class="text-xl font-bold">${app.name}</h2>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-mono font-bold text-white">${app.current_price.toLocaleString()}</div>
-                            <div class="text-xs font-bold ${colorClass}">
-                                ${sign}${app.change_24h}% (24h)
+                    <div class="ticker-card p-5 rounded-xl relative overflow-hidden flex flex-col justify-between h-32">
+                         <div class="absolute top-0 right-0 w-24 h-24 bg-[${app.color}] opacity-[0.03] rounded-full -mr-8 -mt-8 pointer-events-none"></div>
+                        
+                        <div class="flex justify-between items-start z-10">
+                            <div>
+                                <div class="text-[10px] text-slate-500 font-bold tracking-widest mb-1">${app.ticker}</div>
+                                <h2 class="text-xl font-bold text-white">${app.name}</h2>
                             </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-mono font-bold text-slate-200">${app.current_price.toLocaleString()}</div>
+                                <div class="text-xs font-bold ${colorClass}">
+                                    ${sign}${app.change_24h}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto z-10 flex items-center opacity-80">
+                            ${badges}
                         </div>
                     </div>
                 `;
@@ -90,10 +65,11 @@
                 label: app.name,
                 data: app.history,
                 borderColor: app.color,
-                backgroundColor: app.color + '20', // Przezroczystość
+                backgroundColor: 'transparent',
                 borderWidth: 2,
-                tension: 0.4, // Zaokrąglenie linii
-                pointRadius: 3
+                tension: 0.3, 
+                pointRadius: 0,
+                pointHoverRadius: 6
             }));
 
             new Chart(ctx, {
@@ -105,8 +81,19 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
-                        legend: { labels: { color: '#94a3b8' } }
+                        legend: { labels: { color: '#64748b', boxWidth: 10 } },
+                        tooltip: { 
+                            backgroundColor: '#1e293b', 
+                            titleColor: '#fff', 
+                            bodyColor: '#94a3b8',
+                            borderColor: '#334155',
+                            borderWidth: 1
+                        }
                     },
                     scales: {
                         y: {
@@ -122,8 +109,4 @@
             });
         }
 
-        // Startujemy
         loadStonks();
-    </script>
-</body>
-</html>
